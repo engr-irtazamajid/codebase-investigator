@@ -8,6 +8,7 @@ Fallback triggers automatically when:
 OpenRouter uses the OpenAI-compatible chat completions API, so no extra
 SDK is needed — httpx (already a dependency) handles it directly.
 """
+
 from __future__ import annotations
 
 import json
@@ -21,7 +22,14 @@ from app.core.config import get_settings
 
 logger = logging.getLogger(__name__)
 
-_QUOTA_SIGNALS = ("429", "quota", "rate limit", "resource_exhausted", "resource exhausted", "limit exceeded")
+_QUOTA_SIGNALS = (
+    "429",
+    "quota",
+    "rate limit",
+    "resource_exhausted",
+    "resource exhausted",
+    "limit exceeded",
+)
 OPENROUTER_BASE = "https://openrouter.ai/api/v1"
 
 
@@ -68,10 +76,15 @@ class LLMClient:
                     raise RuntimeError(
                         "Gemini quota exceeded and no OPENROUTER_API_KEY configured."
                     ) from exc
-                logger.warning("Gemini quota hit — falling back to OpenRouter (%s)", self._settings.openrouter_model)
+                logger.warning(
+                    "Gemini quota hit — falling back to OpenRouter (%s)",
+                    self._settings.openrouter_model,
+                )
 
         if not self._settings.openrouter_enabled:
-            raise RuntimeError("No LLM provider configured. Set GEMINI_API_KEY or OPENROUTER_API_KEY.")
+            raise RuntimeError(
+                "No LLM provider configured. Set GEMINI_API_KEY or OPENROUTER_API_KEY."
+            )
 
         async for token in self._openrouter_stream(prompt, temperature):
             yield token
@@ -88,10 +101,15 @@ class LLMClient:
                     raise RuntimeError(
                         "Gemini quota exceeded and no OPENROUTER_API_KEY configured."
                     ) from exc
-                logger.warning("Gemini quota hit — falling back to OpenRouter (%s)", self._settings.openrouter_model)
+                logger.warning(
+                    "Gemini quota hit — falling back to OpenRouter (%s)",
+                    self._settings.openrouter_model,
+                )
 
         if not self._settings.openrouter_enabled:
-            raise RuntimeError("No LLM provider configured. Set GEMINI_API_KEY or OPENROUTER_API_KEY.")
+            raise RuntimeError(
+                "No LLM provider configured. Set GEMINI_API_KEY or OPENROUTER_API_KEY."
+            )
 
         return await self._openrouter_generate(prompt, temperature)
 
@@ -109,7 +127,9 @@ class LLMClient:
     async def _gemini_stream(self, prompt: str, temperature: float) -> AsyncGenerator[str, None]:
         model = genai.GenerativeModel(self._settings.model_name)
         gen_cfg = genai.types.GenerationConfig(temperature=temperature, max_output_tokens=2048)
-        response = await model.generate_content_async(prompt, generation_config=gen_cfg, stream=True)
+        response = await model.generate_content_async(
+            prompt, generation_config=gen_cfg, stream=True
+        )
         async for chunk in response:
             text = getattr(chunk, "text", None)
             if text:
@@ -131,7 +151,9 @@ class LLMClient:
             "X-Title": "CodeInvestigator",
         }
 
-    async def _openrouter_stream(self, prompt: str, temperature: float) -> AsyncGenerator[str, None]:
+    async def _openrouter_stream(
+        self, prompt: str, temperature: float
+    ) -> AsyncGenerator[str, None]:
         payload = {
             "model": self._settings.openrouter_model,
             "messages": [{"role": "user", "content": prompt}],

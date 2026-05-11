@@ -5,6 +5,7 @@ Used automatically when GEMINI_API_KEY is not set.
 Quality is lower than embedding-based search but works well for code
 (identifiers, function names, and keywords are highly discriminative).
 """
+
 from __future__ import annotations
 
 import re

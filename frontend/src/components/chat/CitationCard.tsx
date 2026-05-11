@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ChevronDown, ChevronRight, ExternalLink, FileCode } from 'lucide-react';
+import { ChevronDown, ChevronRight, FileCode } from 'lucide-react';
 import { Citation } from '@/types';
 import { fetchFileContent } from '@/lib/api';
 import { useConversationStore } from '@/store/conversation';

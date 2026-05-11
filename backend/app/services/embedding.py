@@ -1,4 +1,5 @@
 """Thin wrapper around Gemini's embedding API with batching and retry."""
+
 from __future__ import annotations
 
 import asyncio

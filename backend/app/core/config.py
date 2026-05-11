@@ -11,7 +11,7 @@ class Settings(BaseSettings):
 
     # ── OpenRouter (fallback for generation when Gemini is absent or quota-hit)
     openrouter_api_key: str = ""
-    openrouter_model: str = "google/gemini-2.0-flash-lite"   # any OpenRouter model slug
+    openrouter_model: str = "google/gemini-2.0-flash-lite"  # any OpenRouter model slug
 
     # ── Retrieval & chunking ──────────────────────────────────────────────────
     max_retrieval_chunks: int = 8

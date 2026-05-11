@@ -20,15 +20,13 @@ router = APIRouter(prefix="/repo", tags=["repo"])
 
 
 @router.post("/ingest", response_model=IngestResponse)
-@limiter.limit("5/minute;20/hour")   # git clone + embed is expensive
+@limiter.limit("5/minute;20/hour")  # git clone + embed is expensive
 async def ingest(request: Request, body: IngestRequest) -> IngestResponse:
     """Clone repo, chunk files, build search index, create session."""
     settings = get_settings()
 
     try:
-        repo = await asyncio.get_event_loop().run_in_executor(
-            None, ingest_repo, body.github_url
-        )
+        repo = await asyncio.get_event_loop().run_in_executor(None, ingest_repo, body.github_url)
     except ValueError as e:
         raise HTTPException(status_code=422, detail=str(e)) from e
     except RuntimeError as e:
@@ -55,7 +53,9 @@ async def ingest(request: Request, body: IngestRequest) -> IngestResponse:
             store.add(repo.chunks)
     else:
         # No Gemini key → keyword (TF-IDF) search; generation via OpenRouter
-        logger.info("No GEMINI_API_KEY — using TF-IDF keyword search for session %s", repo.session_id)
+        logger.info(
+            "No GEMINI_API_KEY — using TF-IDF keyword search for session %s", repo.session_id
+        )
         if not settings.openrouter_enabled:
             raise HTTPException(
                 status_code=503,
@@ -77,7 +77,10 @@ async def ingest(request: Request, body: IngestRequest) -> IngestResponse:
     search_mode = "vector" if isinstance(store, VectorStore) else "tfidf"
     logger.info(
         "Session %s ready — %d files, %d chunks, search=%s",
-        repo.session_id, repo.files_indexed, len(repo.chunks), search_mode,
+        repo.session_id,
+        repo.files_indexed,
+        len(repo.chunks),
+        search_mode,
     )
 
     return IngestResponse(

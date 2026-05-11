@@ -1,4 +1,5 @@
 """Per-session in-memory vector store backed by numpy cosine similarity."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -28,11 +29,7 @@ class VectorStore:
         norms = np.linalg.norm(new_rows, axis=1, keepdims=True) + 1e-10
         new_rows /= norms
 
-        self._matrix = (
-            new_rows
-            if self._matrix is None
-            else np.vstack([self._matrix, new_rows])
-        )
+        self._matrix = new_rows if self._matrix is None else np.vstack([self._matrix, new_rows])
 
     def search(self, query_embedding: list[float], top_k: int = 8) -> list[SearchResult]:
         if self._matrix is None or not self._chunks:
@@ -41,15 +38,12 @@ class VectorStore:
         q = np.array(query_embedding, dtype=np.float32)
         q /= np.linalg.norm(q) + 1e-10
 
-        scores: np.ndarray = self._matrix @ q          # cosine similarity
+        scores: np.ndarray = self._matrix @ q  # cosine similarity
         k = min(top_k, len(self._chunks))
-        top_idx = np.argpartition(scores, -k)[-k:]     # fast partial sort
+        top_idx = np.argpartition(scores, -k)[-k:]  # fast partial sort
         top_idx = top_idx[np.argsort(scores[top_idx])[::-1]]
 
-        return [
-            SearchResult(chunk=self._chunks[i], score=float(scores[i]))
-            for i in top_idx
-        ]
+        return [SearchResult(chunk=self._chunks[i], score=float(scores[i])) for i in top_idx]
 
     @property
     def size(self) -> int:

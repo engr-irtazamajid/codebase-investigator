@@ -1,18 +1,25 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useSyncExternalStore } from 'react';
 import { useConversationStore } from '@/store/conversation';
 import RepoInput from '@/components/repo/RepoInput';
 import ChatInterface from '@/components/chat/ChatInterface';
 import { BookOpen, FileCode2, Layers } from 'lucide-react';
 
+// React 18 idiomatic way to detect client-side without useEffect+setState.
+// Server snapshot returns false → renders null on server, true on client.
+const useIsClient = () =>
+  useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
+
 export default function Home() {
   const { repoInfo, sessionId, reset } = useConversationStore();
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  const isClient = useIsClient();
 
-  // Prevent SSR/client mismatch — Zustand state is client-only
-  if (!mounted) return null;
+  if (!isClient) return null;
 
   return (
     <div className="flex flex-col h-screen bg-slate-950 text-slate-100">

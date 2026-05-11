@@ -1,4 +1,5 @@
 """Clone a public GitHub repo, walk its files, and produce line-delimited chunks."""
+
 from __future__ import annotations
 
 import re
@@ -14,21 +15,56 @@ settings = get_settings()
 
 # Extensions worth indexing → language label for syntax highlighting
 SUPPORTED_EXTENSIONS: dict[str, str] = {
-    ".py": "python", ".js": "javascript", ".ts": "typescript",
-    ".tsx": "tsx", ".jsx": "jsx", ".go": "go", ".rs": "rust",
-    ".java": "java", ".kt": "kotlin", ".cs": "csharp", ".cpp": "cpp",
-    ".c": "c", ".h": "c", ".rb": "ruby", ".php": "php",
-    ".swift": "swift", ".scala": "scala", ".sh": "bash",
-    ".yaml": "yaml", ".yml": "yaml", ".json": "json",
-    ".md": "markdown", ".toml": "toml", ".env": "bash",
-    ".html": "html", ".css": "css", ".scss": "scss",
-    ".sql": "sql", ".graphql": "graphql",
+    ".py": "python",
+    ".js": "javascript",
+    ".ts": "typescript",
+    ".tsx": "tsx",
+    ".jsx": "jsx",
+    ".go": "go",
+    ".rs": "rust",
+    ".java": "java",
+    ".kt": "kotlin",
+    ".cs": "csharp",
+    ".cpp": "cpp",
+    ".c": "c",
+    ".h": "c",
+    ".rb": "ruby",
+    ".php": "php",
+    ".swift": "swift",
+    ".scala": "scala",
+    ".sh": "bash",
+    ".yaml": "yaml",
+    ".yml": "yaml",
+    ".json": "json",
+    ".md": "markdown",
+    ".toml": "toml",
+    ".env": "bash",
+    ".html": "html",
+    ".css": "css",
+    ".scss": "scss",
+    ".sql": "sql",
+    ".graphql": "graphql",
 }
 
 SKIP_DIRS = {
-    ".git", "node_modules", "__pycache__", ".venv", "venv", "env",
-    "dist", "build", ".next", ".nuxt", "coverage", ".pytest_cache",
-    ".mypy_cache", "vendor", "target", ".gradle", "bin", "obj",
+    ".git",
+    "node_modules",
+    "__pycache__",
+    ".venv",
+    "venv",
+    "env",
+    "dist",
+    "build",
+    ".next",
+    ".nuxt",
+    "coverage",
+    ".pytest_cache",
+    ".mypy_cache",
+    "vendor",
+    "target",
+    ".gradle",
+    "bin",
+    "obj",
 }
 
 # Normalise various GitHub URL forms to https clone URL
@@ -41,9 +77,9 @@ _GITHUB_RE = re.compile(
 @dataclass
 class CodeChunk:
     id: str
-    file_path: str       # relative to repo root
-    start_line: int      # 1-indexed
-    end_line: int        # inclusive
+    file_path: str  # relative to repo root
+    start_line: int  # 1-indexed
+    end_line: int  # inclusive
     content: str
     language: str
 
@@ -136,7 +172,10 @@ def ingest_repo(github_url: str) -> IngestedRepo:
         if not abs_path.is_file():
             continue
         # Skip hidden dirs and known junk directories
-        if any(part in SKIP_DIRS or part.startswith(".") for part in abs_path.relative_to(root).parts[:-1]):
+        if any(
+            part in SKIP_DIRS or part.startswith(".")
+            for part in abs_path.relative_to(root).parts[:-1]
+        ):
             continue
         if abs_path.suffix not in SUPPORTED_EXTENSIONS:
             continue
@@ -146,8 +185,11 @@ def ingest_repo(github_url: str) -> IngestedRepo:
         rel_path = str(abs_path.relative_to(root))
         language = SUPPORTED_EXTENSIONS[abs_path.suffix]
         file_chunks = _chunk_file(
-            abs_path, rel_path, language,
-            settings.chunk_size, settings.chunk_overlap,
+            abs_path,
+            rel_path,
+            language,
+            settings.chunk_size,
+            settings.chunk_overlap,
         )
         all_chunks.extend(file_chunks)
         if file_chunks:

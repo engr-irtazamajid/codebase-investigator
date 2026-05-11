@@ -23,14 +23,14 @@ class Citation(BaseModel):
 
 
 class AuditFlag(BaseModel):
-    type: str        # citation_invalid | overconfident | scope_creep | contradiction | missing_evidence
+    type: str  # citation_invalid | overconfident | scope_creep | contradiction | missing_evidence
     description: str
-    severity: str    # low | medium | high
+    severity: str  # low | medium | high
 
 
 class AuditResult(BaseModel):
-    trust_score: int    # 0–10
-    verdict: str        # reliable | caution | unreliable
+    trust_score: int  # 0–10
+    verdict: str  # reliable | caution | unreliable
     flags: list[AuditFlag]
     summary: str
 
@@ -41,7 +41,7 @@ class ChatRequest(BaseModel):
 
 
 class ConversationMessage(BaseModel):
-    role: str            # user | assistant
+    role: str  # user | assistant
     content: str
     turn: int
     citations: list[Citation] | None = None

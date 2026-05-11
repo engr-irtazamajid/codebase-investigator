@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from 'react';
 import { ArrowUp, Loader2 } from 'lucide-react';
 import { streamChat } from '@/lib/api';
 import { useConversationStore } from '@/store/conversation';
-import { Message } from '@/types';
 import MessageBubble from './MessageBubble';
 
 const EXAMPLE_QUESTIONS = [

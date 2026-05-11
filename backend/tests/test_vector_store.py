@@ -1,4 +1,5 @@
 """Tests for the numpy cosine-similarity vector store."""
+
 import numpy as np
 
 from app.services.vector_store import VectorStore

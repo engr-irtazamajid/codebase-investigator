@@ -1,4 +1,5 @@
 """Tests for audit JSON parsing and verdict normalisation."""
+
 import json
 
 import pytest
@@ -27,7 +28,11 @@ class TestParseAuditJson:
     def test_flags_parsed(self):
         payload = self._make_json(
             flags=[
-                {"type": "overconfident", "description": "No citation for claim", "severity": "medium"}
+                {
+                    "type": "overconfident",
+                    "description": "No citation for claim",
+                    "severity": "medium",
+                }
             ]
         )
         result = _parse_audit_json(payload)

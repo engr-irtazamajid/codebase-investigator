@@ -4,6 +4,7 @@ Independent answer auditor.
 DESIGN CONTRACT: receives ONLY (question, answer, raw_chunks) — zero
 access to conversation history or prior claims. Fresh-eyes verification.
 """
+
 from __future__ import annotations
 
 import json

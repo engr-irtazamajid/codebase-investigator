@@ -1,4 +1,5 @@
 """Tests for session management, claim registry, and digest generation."""
+
 import pytest
 
 from app.services.conversation import Claim, Session, create_session, get_session
@@ -78,7 +79,7 @@ class TestHistoryDigest:
         long_msg = "x" * 1000
         session.add_user_message(long_msg)
         digest = session.history_digest()
-        assert len(digest) < 2000   # truncated
+        assert len(digest) < 2000  # truncated
 
 
 class TestSessionStore:
@@ -97,8 +98,10 @@ class TestSessionStore:
 
     def test_search_mode_vector(self, sample_chunks):
         from app.services.vector_store import VectorStore
+
         store = VectorStore()
         import numpy as np
+
         embs = [np.random.randn(8).tolist() for _ in sample_chunks]
         store.add(sample_chunks, embs)
         s = create_session("vec-session", "repo", "/tmp", store)

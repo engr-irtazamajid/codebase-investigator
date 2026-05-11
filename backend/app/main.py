@@ -39,7 +39,9 @@ app.include_router(chat.router)
 @app.on_event("startup")
 async def _startup() -> None:
     if not settings.gemini_enabled and not settings.openrouter_enabled:
-        logger.warning("⚠️  No LLM provider configured. Set GEMINI_API_KEY or OPENROUTER_API_KEY in .env")
+        logger.warning(
+            "⚠️  No LLM provider configured. Set GEMINI_API_KEY or OPENROUTER_API_KEY in .env"
+        )
     if settings.gemini_enabled:
         genai.configure(api_key=settings.gemini_api_key)
         logger.info("✓ Gemini configured (model: %s)", settings.model_name)

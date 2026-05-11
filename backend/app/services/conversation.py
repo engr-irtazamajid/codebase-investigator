@@ -1,4 +1,5 @@
 """In-memory session store: conversation history + claim registry."""
+
 from __future__ import annotations
 
 import time
@@ -9,7 +10,7 @@ from app.services.repo_ingestion import CodeChunk
 from app.services.tfidf_store import TFIDFStore
 from app.services.vector_store import VectorStore
 
-_SESSION_TTL = 4 * 60 * 60   # 4 hours
+_SESSION_TTL = 4 * 60 * 60  # 4 hours
 
 AnyStore = VectorStore | TFIDFStore
 
@@ -17,13 +18,13 @@ AnyStore = VectorStore | TFIDFStore
 @dataclass
 class Claim:
     turn: int
-    text: str       # one-sentence factual assertion
-    evidence: str   # "file_path:start-end" or empty
+    text: str  # one-sentence factual assertion
+    evidence: str  # "file_path:start-end" or empty
 
 
 @dataclass
 class HistoryEntry:
-    role: str       # "user" | "assistant"
+    role: str  # "user" | "assistant"
     content: str
     turn: int
     citations: list[Citation] = field(default_factory=list)
@@ -35,7 +36,7 @@ class Session:
     id: str
     repo_name: str
     temp_dir: str
-    store: AnyStore                          # VectorStore (Gemini) or TFIDFStore (fallback)
+    store: AnyStore  # VectorStore (Gemini) or TFIDFStore (fallback)
     history: list[HistoryEntry] = field(default_factory=list)
     claim_registry: list[Claim] = field(default_factory=list)
     last_retrieved_chunks: list[CodeChunk] = field(default_factory=list)
@@ -62,7 +63,9 @@ class Session:
         audit: AuditResult | None,
     ) -> None:
         self.history.append(
-            HistoryEntry(role="assistant", content=content, turn=turn, citations=citations, audit=audit)
+            HistoryEntry(
+                role="assistant", content=content, turn=turn, citations=citations, audit=audit
+            )
         )
 
     def register_claims(self, claims: list[Claim]) -> None:
@@ -80,7 +83,7 @@ class Session:
         return "\n".join(lines)
 
     def history_digest(self, max_turns: int = 6) -> str:
-        recent = self.history[-(max_turns * 2):]
+        recent = self.history[-(max_turns * 2) :]
         if not recent:
             return ""
         lines = ["CONVERSATION HISTORY (recent turns):"]

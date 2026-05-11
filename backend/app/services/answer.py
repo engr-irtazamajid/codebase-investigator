@@ -1,4 +1,5 @@
 """Answer generation: retrieve → prompt → stream → parse citations & claims."""
+
 from __future__ import annotations
 
 import re
@@ -35,7 +36,14 @@ def _build_prompt(
     claims_digest: str,
 ) -> str:
     code_context = "\n\n".join(c.format_for_prompt() for c in retrieved_chunks)
-    sections = [_SYSTEM_PROMPT, f"REPOSITORY: {repo_name}", "─" * 60, "RETRIEVED CODE:", code_context, "─" * 60]
+    sections = [
+        _SYSTEM_PROMPT,
+        f"REPOSITORY: {repo_name}",
+        "─" * 60,
+        "RETRIEVED CODE:",
+        code_context,
+        "─" * 60,
+    ]
     if claims_digest:
         sections += [claims_digest, "─" * 60]
     if history_digest:
@@ -44,7 +52,9 @@ def _build_prompt(
     return "\n\n".join(sections)
 
 
-def _parse_citations(answer: str, retrieved_chunks: list, scores: dict[str, float]) -> list[Citation]:
+def _parse_citations(
+    answer: str, retrieved_chunks: list, scores: dict[str, float]
+) -> list[Citation]:
     chunk_map = {(c.file_path, c.start_line): c for c in retrieved_chunks}
     seen: set[str] = set()
     citations: list[Citation] = []
@@ -56,13 +66,15 @@ def _parse_citations(answer: str, retrieved_chunks: list, scores: dict[str, floa
             continue
         seen.add(key)
         matched = chunk_map.get((file_path, start_line))
-        citations.append(Citation(
-            file_path=file_path,
-            start_line=start_line,
-            end_line=end_line,
-            content=matched.content if matched else "(cited but not in retrieved context)",
-            relevance_score=scores.get(file_path, 0.0),
-        ))
+        citations.append(
+            Citation(
+                file_path=file_path,
+                start_line=start_line,
+                end_line=end_line,
+                content=matched.content if matched else "(cited but not in retrieved context)",
+                relevance_score=scores.get(file_path, 0.0),
+            )
+        )
 
     return citations
 
@@ -74,7 +86,13 @@ def _extract_claims(answer: str, turn: int) -> list[Claim]:
         if refs:
             clean = _CITATION_RE.sub("", sentence).strip()
             if len(clean) > 20:
-                claims.append(Claim(turn=turn, text=clean[:200], evidence=f"{refs[0][0]}:{refs[0][1]}-{refs[0][2]}"))
+                claims.append(
+                    Claim(
+                        turn=turn,
+                        text=clean[:200],
+                        evidence=f"{refs[0][0]}:{refs[0][1]}-{refs[0][2]}",
+                    )
+                )
     return claims[:10]
 
 

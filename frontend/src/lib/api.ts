@@ -1,4 +1,4 @@
-import { Citation, AuditResult, RepoInfo, StreamEvent } from '@/types';
+import type { RepoInfo, StreamEvent } from '@/types';
 
 const BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000';
 

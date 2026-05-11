@@ -15,7 +15,7 @@ router = APIRouter(prefix="/chat", tags=["chat"])
 
 
 @router.post("/ask")
-@limiter.limit("30/minute")   # one question every 2s sustained; bursty is fine
+@limiter.limit("30/minute")  # one question every 2s sustained; bursty is fine
 async def ask(request: Request, body: ChatRequest) -> EventSourceResponse:
     """
     Stream answer tokens, then emit citations and an independent audit.
@@ -30,7 +30,9 @@ async def ask(request: Request, body: ChatRequest) -> EventSourceResponse:
     try:
         session = conv_svc.get_session(body.session_id)
     except KeyError as e:
-        raise HTTPException(status_code=404, detail="Session not found. Ingest a repo first.") from e
+        raise HTTPException(
+            status_code=404, detail="Session not found. Ingest a repo first."
+        ) from e
 
     async def event_generator():
         collected_answer: list[str] = []
@@ -60,15 +62,25 @@ async def ask(request: Request, body: ChatRequest) -> EventSourceResponse:
             yield {"data": json.dumps({"type": "audit", "data": audit_result.model_dump()})}
 
         except Exception as exc:
-            yield {"data": json.dumps({
-                "type": "audit",
-                "data": {
-                    "trust_score": 5,
-                    "verdict": "caution",
-                    "flags": [{"type": "missing_evidence", "description": str(exc), "severity": "low"}],
-                    "summary": "Audit service encountered an error.",
-                },
-            })}
+            yield {
+                "data": json.dumps(
+                    {
+                        "type": "audit",
+                        "data": {
+                            "trust_score": 5,
+                            "verdict": "caution",
+                            "flags": [
+                                {
+                                    "type": "missing_evidence",
+                                    "description": str(exc),
+                                    "severity": "low",
+                                }
+                            ],
+                            "summary": "Audit service encountered an error.",
+                        },
+                    }
+                )
+            }
 
         yield {"data": "[DONE]"}
 

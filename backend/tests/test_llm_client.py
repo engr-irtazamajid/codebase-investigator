@@ -40,8 +40,10 @@ class TestLLMClientProviderSelection:
         monkeypatch.setenv("OPENROUTER_API_KEY", "")
         # Force settings cache to reload
         from app.core import config
+
         config.get_settings.cache_clear()
         from app.core.llm_client import LLMClient
+
         client = LLMClient()
         assert "gemini" in client.active_provider
 
@@ -49,8 +51,10 @@ class TestLLMClientProviderSelection:
         monkeypatch.setenv("GEMINI_API_KEY", "")
         monkeypatch.setenv("OPENROUTER_API_KEY", "sk-or-v1-test")
         from app.core import config
+
         config.get_settings.cache_clear()
         from app.core.llm_client import LLMClient
+
         client = LLMClient()
         assert "openrouter" in client.active_provider
 
@@ -58,7 +62,9 @@ class TestLLMClientProviderSelection:
         monkeypatch.setenv("GEMINI_API_KEY", "")
         monkeypatch.setenv("OPENROUTER_API_KEY", "")
         from app.core import config
+
         config.get_settings.cache_clear()
         from app.core.llm_client import LLMClient
+
         client = LLMClient()
         assert client.active_provider == "none"

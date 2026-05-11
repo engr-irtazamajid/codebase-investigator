@@ -86,8 +86,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # full history needed for gitleaks
 
       - name: Scan for secrets (gitleaks)
         uses: gitleaks/gitleaks-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_LOG_OPTS: "--no-walk"   # scan working tree, not diff between SHAs

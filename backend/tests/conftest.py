@@ -1,4 +1,5 @@
 """Shared fixtures and test environment setup."""
+
 import os
 
 import pytest

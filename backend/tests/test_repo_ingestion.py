@@ -1,4 +1,5 @@
 """Tests for repo ingestion: URL normalisation and line-window chunking."""
+
 import pytest
 
 from app.services.repo_ingestion import _chunk_file, normalise_github_url
@@ -37,7 +38,7 @@ class TestNormaliseGithubUrl:
 class TestChunkFile:
     def test_produces_correct_line_numbers(self, tmp_path):
         f = tmp_path / "test.py"
-        lines = [f"line_{i}" for i in range(1, 101)]   # 100 lines
+        lines = [f"line_{i}" for i in range(1, 101)]  # 100 lines
         f.write_text("\n".join(lines))
 
         chunks = _chunk_file(f, "test.py", "python", chunk_size=20, overlap=5)

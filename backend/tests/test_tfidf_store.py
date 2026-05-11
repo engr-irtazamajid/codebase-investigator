@@ -68,7 +68,7 @@ class TestTFIDFStore:
         store.add(sample_chunks)
         results = store.search("authentication jwt", top_k=5)
         for r in results:
-            assert 0.0 <= r.score <= 1.0 + 1e-6   # allow float tolerance
+            assert 0.0 <= r.score <= 1.0 + 1e-6  # allow float tolerance
 
     def test_results_sorted_descending(self, sample_chunks):
         store = TFIDFStore()
