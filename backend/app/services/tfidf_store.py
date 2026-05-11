@@ -46,7 +46,7 @@ class TFIDFStore:
         self._chunks: list[CodeChunk] = []
         self._vocab: dict[str, int] = {}
         self._matrix: np.ndarray | None = None
-        self._idf: np.ndarray | None = None
+        self._idf: np.ndarray | None = None  # set to ndarray after first _rebuild()
 
     def add(self, chunks: list[CodeChunk]) -> None:
         if not chunks:
@@ -73,9 +73,10 @@ class TFIDFStore:
                 tf[i, j] = cnt / length
 
         df = (tf > 0).astype(np.float32).sum(axis=0)
-        self._idf = np.log((n_docs + 1.0) / (df + 1.0)) + 1.0
+        idf: np.ndarray = np.log((n_docs + 1.0) / (df + 1.0)) + 1.0
+        self._idf = idf
 
-        tfidf = tf * self._idf
+        tfidf = tf * idf
         norms = np.linalg.norm(tfidf, axis=1, keepdims=True) + 1e-10
         self._matrix = tfidf / norms
 

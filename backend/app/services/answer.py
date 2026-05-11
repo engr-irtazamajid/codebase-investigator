@@ -10,6 +10,8 @@ from app.core.llm_client import get_llm_client
 from app.models.schemas import Citation
 from app.services.conversation import Claim, Session
 from app.services.embedding import embed_query
+from app.services.tfidf_store import SearchResult as TFIDFResult
+from app.services.vector_store import SearchResult as VectorResult
 from app.services.vector_store import VectorStore
 
 _CITATION_RE = re.compile(r"\[\[([^:\]]+):(\d+)-(\d+)\]\]")
@@ -105,6 +107,7 @@ async def stream_answer(session: Session, question: str) -> AsyncGenerator[dict,
     """
     settings = get_settings()
 
+    results: list[VectorResult] | list[TFIDFResult]
     if isinstance(session.store, VectorStore):
         q_emb = await embed_query(question)
         results = session.store.search(q_emb, top_k=settings.max_retrieval_chunks)

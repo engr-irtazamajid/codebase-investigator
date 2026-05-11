@@ -40,17 +40,22 @@ async def ingest(request: Request, body: IngestRequest) -> IngestResponse:
 
     # ── Choose search backend based on available credentials ──────────────────
     if settings.gemini_enabled:
-        # Gemini available → high-quality vector (embedding) search
         logger.info("Using vector search (Gemini embeddings) for session %s", repo.session_id)
+        vector_store: VectorStore | None = None
         try:
             texts = [c.content for c in repo.chunks]
             embeddings = await emb_svc.embed_documents(texts)
-            store: VectorStore | TFIDFStore = VectorStore()
-            store.add(repo.chunks, embeddings)
+            vector_store = VectorStore()
+            vector_store.add(repo.chunks, embeddings)
         except Exception as e:
             logger.warning("Embedding failed (%s) — falling back to TF-IDF", e)
-            store = TFIDFStore()
-            store.add(repo.chunks)
+
+        if vector_store is not None:
+            store: VectorStore | TFIDFStore = vector_store
+        else:
+            fallback = TFIDFStore()
+            fallback.add(repo.chunks)
+            store = fallback
     else:
         # No Gemini key → keyword (TF-IDF) search; generation via OpenRouter
         logger.info(
