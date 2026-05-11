@@ -4,6 +4,16 @@ Ask questions about any public GitHub repo in plain English and get answers grou
 
 ---
 
+## Live demo
+
+| | URL |
+|---|---|
+| Frontend | [codebase-investigator-578p.vercel.app](https://codebase-investigator-578p.vercel.app/) |
+| Backend API | [codebase-investigator-production-1344.up.railway.app](https://codebase-investigator-production-1344.up.railway.app/) |
+| API docs | [codebase-investigator-production-1344.up.railway.app/docs](https://codebase-investigator-production-1344.up.railway.app/docs) |
+
+---
+
 ## Features
 
 - **Grounded answers** — every claim cites `[[file_path:start_line-end_line]]`, rendered as expandable code cards
@@ -394,7 +404,7 @@ Use **Railway** (easiest) or **Fly.io** for the backend instead.
 1. Push to GitHub, connect repo at [vercel.com](https://vercel.com)
 2. Set one environment variable in the Vercel dashboard:
    ```
-   NEXT_PUBLIC_API_URL=https://your-railway-backend.up.railway.app
+   NEXT_PUBLIC_API_URL=https://codebase-investigator-production-1344.up.railway.app
    ```
 3. Every push to `main` deploys automatically — no workflow needed.
 
@@ -406,7 +416,7 @@ Use **Railway** (easiest) or **Fly.io** for the backend instead.
    GEMINI_API_KEY=...
    OPENROUTER_API_KEY=...   # optional fallback
    OPENROUTER_MODEL=...
-   CORS_ORIGINS=["https://your-vercel-app.vercel.app"]
+   CORS_ORIGINS=https://codebase-investigator-578p.vercel.app,http://localhost:3000
    ```
 4. To enable automatic deploys from the CD pipeline, add `RAILWAY_TOKEN` to GitHub secrets and set the `RAILWAY_ENABLED` repo variable to `true`.
 

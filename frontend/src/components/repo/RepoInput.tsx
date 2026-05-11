@@ -1,12 +1,15 @@
 'use client';
 
-import { useState } from 'react';
 import { GitBranch, Loader2, Search } from 'lucide-react';
 import { ingestRepo } from '@/lib/api';
 import { useConversationStore } from '@/store/conversation';
 
-export default function RepoInput() {
-  const [url, setUrl] = useState('');
+interface Props {
+  url: string;
+  onUrlChange: (url: string) => void;
+}
+
+export default function RepoInput({ url, onUrlChange }: Props) {
   const { setSession, setIngesting, setError, isIngesting, error } =
     useConversationStore();
 
@@ -28,14 +31,14 @@ export default function RepoInput() {
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto">
+    <div className="w-full">
       <form onSubmit={handleSubmit} className="flex gap-2">
         <div className="relative flex-1">
           <GitBranch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
           <input
             type="url"
             value={url}
-            onChange={(e) => setUrl(e.target.value)}
+            onChange={(e) => onUrlChange(e.target.value)}
             placeholder="https://github.com/owner/repo"
             className="w-full pl-10 pr-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition text-sm"
             disabled={isIngesting}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useSyncExternalStore } from 'react';
+import { useState, useSyncExternalStore } from 'react';
 import { useConversationStore } from '@/store/conversation';
 import RepoInput from '@/components/repo/RepoInput';
 import ChatInterface from '@/components/chat/ChatInterface';
@@ -40,6 +40,7 @@ const FEATURES = [
 export default function Home() {
   const { repoInfo, sessionId, reset } = useConversationStore();
   const isClient = useIsClient();
+  const [repoUrl, setRepoUrl] = useState('');
 
   if (!isClient) return null;
 
@@ -108,7 +109,7 @@ export default function Home() {
 
             {/* Input */}
             <div className="w-full max-w-xl">
-              <RepoInput />
+              <RepoInput url={repoUrl} onUrlChange={setRepoUrl} />
             </div>
 
             {/* Feature cards */}
@@ -130,20 +131,10 @@ export default function Home() {
             {/* Example repos */}
             <div className="flex flex-wrap gap-2 justify-center">
               <span className="text-xs text-slate-600 self-center">Try with:</span>
-              {[
-                'tiangolo/fastapi',
-                'vercel/next.js',
-                'pallets/flask',
-              ].map((repo) => (
+              {['tiangolo/fastapi', 'vercel/next.js', 'pallets/flask'].map((repo) => (
                 <button
                   key={repo}
-                  onClick={() => {
-                    const input = document.querySelector('input[type="url"]') as HTMLInputElement;
-                    if (input) {
-                      input.value = `https://github.com/${repo}`;
-                      input.dispatchEvent(new Event('input', { bubbles: true }));
-                    }
-                  }}
+                  onClick={() => setRepoUrl(`https://github.com/${repo}`)}
                   className="text-xs font-mono text-slate-400 hover:text-indigo-400 bg-slate-800/60 hover:bg-slate-800 border border-slate-700/60 hover:border-indigo-500/30 rounded-lg px-3 py-1.5 transition-all"
                 >
                   {repo}
